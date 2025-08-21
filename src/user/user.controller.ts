@@ -8,7 +8,8 @@ export class UserController {
 
   @Post('register')
   async register(@Body() body: RegisterDto) {
-    return this.userService.register(body);
+    const user = await this.userService.register(body);
+    return { status: true, message: 'User registered successfully', data: user };
   }
 
   @Post('login')

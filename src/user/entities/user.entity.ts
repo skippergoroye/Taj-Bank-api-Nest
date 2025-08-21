@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { EmailStatus, UserRoles, AccountStatus } from '../enum/user.enum';
 
 @Entity('users')
 export class User {
@@ -26,14 +27,14 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @Column({ nullable: true })
-  role: string;
+  @Column({ type: 'enum', enum: UserRoles, default: UserRoles.CUSTOMER })
+  role: UserRoles;
 
-  @Column({ nullable: true })
-  isEmailVerified: string;
+  @Column({ type: 'enum', enum: EmailStatus, default: EmailStatus.NOT_VERIFIED })
+  isEmailVerified: EmailStatus;
 
-  @Column({ nullable: true })
-  accountStatus: string;
+  @Column({ type: 'enum', enum: AccountStatus, default: AccountStatus.ACTIVE })
+  accountStatus: AccountStatus;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -41,3 +42,4 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 }
+
