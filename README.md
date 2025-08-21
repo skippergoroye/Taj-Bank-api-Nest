@@ -6,6 +6,8 @@ nest g resource user
 1. npm install --save @nestjs/typeorm typeorm pg
 2. npm i --save @nestjs/config --> for dotenv
 3. npm i --save class-validator class-transformer ---> for validator
+4. npm install class-validator class-transformer
+
 
 
 
