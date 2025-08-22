@@ -10,6 +10,9 @@ nest g resource user
 5. npm install bcrypt
    npm install --save-dev @types/bcrypt
 
+6. npm install @nestjs/jwt
+
+
 
 
 
