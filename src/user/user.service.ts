@@ -23,6 +23,7 @@ import { LoginDto } from './dto/login.dto';
 import * as jwt from 'jsonwebtoken';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { TokenService } from 'src/token/token.service';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class UserService {
@@ -30,6 +31,7 @@ export class UserService {
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
     private readonly tokenService: TokenService,
+    private readonly emailService: EmailService,
   ) {}
 
   async register(data: RegisterDto): Promise<Partial<User>> {
@@ -96,19 +98,18 @@ export class UserService {
     };
   }
 
-  async forgotPassword(data: ForgotPasswordDto) {
-    const user = await this.userRepo.findOne({ where: { email: data.email } });
+
+  async forgotPassword(email: string) {
+    const user = await this.userRepo.findOne({ where: { email: email } });
     if (!user) {
       throw new NotFoundException('Account does not exist');
     }
 
-    const token = await this.tokenService.createForgotPasswordToken(data.email);
-
-    // TODO: send email here with token.code
-
+    const token = await this.tokenService.createForgotPasswordToken(email);
+    await this.emailService.sendForgotPasswordMail(email, token.code);
     return {
       message: 'Password reset code has been sent to your mail',
-      data: { email: data.email },
+      data: { email: email },
     };
   }
 

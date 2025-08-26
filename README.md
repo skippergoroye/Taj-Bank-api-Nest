@@ -9,8 +9,8 @@ nest g resource user
 4. npm install class-validator class-transformer
 5. npm install bcrypt
    npm install --save-dev @types/bcrypt
-
 6. npm install @nestjs/jwt
+7. npm i @nestjs-modules/mailer
 
 
 
@@ -36,6 +36,7 @@ npm run typeorm migration:show -- -d typeorm.config.ts
 
 
 # so here is what we have written for the express convert to nestjs
+# show the folder structure and write a clean code too
 
 
 # this is my folder structure show me how to structure the newly generated code

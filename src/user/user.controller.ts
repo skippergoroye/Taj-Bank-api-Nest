@@ -20,8 +20,8 @@ export class UserController {
   }
 
   @Post('forgot-password')
-  async forgotPassword(@Body() body: ForgotPasswordDto) {
-    return this.userService.forgotPassword(body);
+  async forgotPassword(@Body('email') email: string) {
+    return this.userService.forgotPassword(email);
   }
 
   @Post('reset-password')
