@@ -20,21 +20,7 @@ export class RegisterDto {
   password: string;
 }
 
-// // Login DTO
-// export class LoginDto {
-//   @IsEmail()
-//   email: string;
 
-//   @IsString()
-//   @MinLength(6)
-//   password: string;
-// }
-
-// Forgot Password DTO
-export class ForgotPasswordDto {
-  @IsEmail()
-  email: string;
-}
 
 // Reset Password DTO
 export class ResetPasswordDto {

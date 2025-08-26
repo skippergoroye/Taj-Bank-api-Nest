@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import {
   RegisterDto,
-  ForgotPasswordDto,
   ResetPasswordDto,
   SetAccountStatusDto,
 } from './dto/user.dto';
@@ -22,12 +21,15 @@ import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import * as jwt from 'jsonwebtoken';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { TokenService } from 'src/token/token.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
+    private readonly tokenService: TokenService,
   ) {}
 
   async register(data: RegisterDto): Promise<Partial<User>> {
@@ -92,14 +94,21 @@ export class UserService {
       message: 'Login successful',
       data: { user, token },
     };
-
   }
 
   async forgotPassword(data: ForgotPasswordDto) {
+    const user = await this.userRepo.findOne({ where: { email: data.email } });
+    if (!user) {
+      throw new NotFoundException('Account does not exist');
+    }
+
+    const token = await this.tokenService.createForgotPasswordToken(data.email);
+
+    // TODO: send email here with token.code
+
     return {
-      code: ResponseCode.SUCCESS,
-      message: 'Forgot password request received',
-      data,
+      message: 'Password reset code has been sent to your mail',
+      data: { email: data.email },
     };
   }
 
