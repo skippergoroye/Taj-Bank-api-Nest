@@ -3,6 +3,7 @@ import {
   ConflictException,
   NotFoundException,
   UnauthorizedException,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   RegisterDto,
@@ -21,9 +22,9 @@ import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import * as jwt from 'jsonwebtoken';
-import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { TokenService } from 'src/token/token.service';
 import { EmailService } from '../email/email.service';
+import moment from 'moment';
 
 @Injectable()
 export class UserService {
@@ -33,6 +34,11 @@ export class UserService {
     private readonly tokenService: TokenService,
     private readonly emailService: EmailService,
   ) {}
+
+
+
+
+  /** -------------- Register ----------------- */
 
   async register(data: RegisterDto): Promise<Partial<User>> {
     const { firstname, lastname, email, password } = data;
@@ -59,6 +65,11 @@ export class UserService {
     savedUser.password = ''; // Do not return password in response
     return savedUser;
   }
+
+
+
+
+   /** -------------- Login ----------------- */
 
   async login(data: LoginDto) {
     const { email, password } = data;
@@ -99,6 +110,10 @@ export class UserService {
   }
 
 
+
+
+   /** -------------- Forgot password ----------------- */
+
   async forgotPassword(email: string) {
     const user = await this.userRepo.findOne({ where: { email: email } });
     if (!user) {
@@ -113,13 +128,54 @@ export class UserService {
     };
   }
 
-  async resetPassword(data: ResetPasswordDto) {
+
+
+
+
+
+  /** -------------- Reset  password ----------------- */
+
+   async resetPassword(data: ResetPasswordDto) {
+    const { email, code, password } = data;
+
+    // 1. validate token
+    const token = await this.tokenService.getTokenByField({
+      email,
+      code,
+      type: this.tokenService.TokenTypes.FORGOT_PASSWORD,
+      status: this.tokenService.TokenStatus.NOTUSED,
+    });
+
+    if (!token) {
+      throw new BadRequestException('Token has expired or is invalid');
+    }
+
+    if (moment(token.expires).diff(moment(), 'minute') <= 0) {
+      throw new BadRequestException('Token has expired');
+    }
+
+    // 2. find user
+    const user = await this.userRepo.findOne({ where: { email } });
+    if (!user) {
+      throw new NotFoundException('Invalid user record');
+    }
+
+    // 3. hash password
+    user.password = await bcrypt.hash(password, 10);
+    await this.userRepo.save(user);
+
+    // 4. update token status
+    await this.tokenService.updateRecord(
+      { id: token.id },
+      { status: this.tokenService.TokenStatus.USED },
+    );
+
     return {
       code: ResponseCode.SUCCESS,
       message: 'Password reset successful',
-      data,
     };
   }
+
 
   async setAccountStatus(data: SetAccountStatusDto) {
     return {

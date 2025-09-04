@@ -2,8 +2,8 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeor
 
 @Entity()
 export class Token {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column()
   email: string;
@@ -11,10 +11,15 @@ export class Token {
   @Column()
   code: string;
 
+  @Column({ default: 'FORGOT_PASSWORD' }) // or VERIFY_EMAIL
+  type: string;
+
+  @Column({ default: 'NOTUSED' }) // or USED
+  status: string;
+
+  @Column()
+  expires: Date;
+
   @CreateDateColumn()
   createdAt: Date;
-
-  @Column({ default: false })
-  used: boolean;
 }
-
