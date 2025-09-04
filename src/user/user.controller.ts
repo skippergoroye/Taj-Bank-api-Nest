@@ -29,8 +29,4 @@ export class UserController {
     return this.userService.resetPassword(body);
   }
 
-  @Post('set-account-status')
-  async setAccountStatus(@Body() body: SetAccountStatusDto) {
-    return this.userService.setAccountStatus(body);
-  }
 }

@@ -4,8 +4,10 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 import { EmailStatus, UserRoles, AccountStatus } from '../enum/user.enum';
+import { Account } from 'src/accounts/entities/account.entity';
 
 @Entity('users')
 export class User {
@@ -30,11 +32,22 @@ export class User {
   @Column({ type: 'enum', enum: UserRoles, default: UserRoles.CUSTOMER })
   role: UserRoles;
 
-  @Column({ type: 'enum', enum: EmailStatus, default: EmailStatus.NOT_VERIFIED })
+  @Column({
+    type: 'enum',
+    enum: EmailStatus,
+    default: EmailStatus.NOT_VERIFIED,
+  })
   isEmailVerified: EmailStatus;
 
-  @Column({ type: 'enum', enum: AccountStatus, default: AccountStatus.ACTIVE })
+  @Column({
+    type: 'enum',
+    enum: AccountStatus,
+    default: AccountStatus.ACTIVE,
+  })
   accountStatus: AccountStatus;
+
+  @OneToMany(() => Account, (account) => account.user) //one user to many accounts "One User can have many Accounts."
+  accounts: Account[]; 
 
   @CreateDateColumn()
   createdAt: Date;
@@ -42,4 +55,3 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 }
-

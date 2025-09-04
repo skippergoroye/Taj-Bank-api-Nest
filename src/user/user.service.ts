@@ -177,11 +177,12 @@ export class UserService {
   }
 
 
-  async setAccountStatus(data: SetAccountStatusDto) {
-    return {
-      code: ResponseCode.SUCCESS,
-      message: 'Account status updated',
-      data,
-    };
+
+  /** ---------------- Get User By Field ---------------- */
+  async getUserByField(where: Partial<User>): Promise<User | null> {
+    return this.userRepo.findOne({ where });
   }
+
+
+
 }
